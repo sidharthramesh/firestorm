@@ -1,0 +1,7 @@
+SnomedCT_*
+Loinc_*
+backup/*
+.vscode
+migrations/*
+*.exe
+migrate.lock

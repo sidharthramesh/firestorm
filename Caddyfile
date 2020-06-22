@@ -1,0 +1,7 @@
+http://localhost:9200
+reverse_proxy elasticsearch:9200 {
+    header_down Access-Control-Allow-Origin *
+    header_down Access-Control-Allow-Methods "GET, OPTIONS"
+    header_down Access-Control-Allow-Headers "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization,X-CSRF-Token"
+    header_down Access-Control-Expose-Headers Authorization
+}

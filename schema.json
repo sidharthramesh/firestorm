@@ -1,0 +1,58 @@
+{
+    "mappings": {
+        "properties": {
+            "moduleId": {
+                "type": "keyword"
+            },
+            "terms": {
+                "type": "completion",
+                "contexts": [
+                    {
+                        "name": "is_a",
+                        "type": "category",
+                        "path": "is_a"
+                    },
+                    {
+                        "name": "writable",
+                        "type": "category",
+                        "path": "writable"
+                    },
+                    {
+                        "name": "readable",
+                        "type": "category",
+                        "path": "readable"
+                    },
+                    {
+                        "name": "department",
+                        "type": "category",
+                        "path": "department"
+                    }
+                ]
+            },
+            "name": {
+                "type": "text"
+            },
+            "relationships": {
+                "type": "object"
+            },
+            "is_a": {
+                "type": "keyword"
+            },
+            "readable": {
+                "type": "keyword"
+            },
+            "writable": {
+                "type": "keyword"
+            },
+            "reader": {
+                "type": "object"
+            },
+            "writer": {
+                "type": "object"
+            },
+            "department": {
+                "type": "keyword"
+            }
+        }
+    }
+}

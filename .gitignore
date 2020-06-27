@@ -5,3 +5,4 @@ backup/*
 migrations/*
 *.exe
 migrate.lock
+firestorm

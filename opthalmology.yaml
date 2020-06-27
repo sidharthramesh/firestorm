@@ -1,39 +1,61 @@
 department: opthalmology
 concepts: 
     # Tonometry Read Panel
-    - 79764-7:
+    - 79896-7:
         reader:
-            name: tonometry-2
-            props:
-                type: goldman's
+            name: tonometry
     # Tonometry Write Panels
-    - 79764-7:goldmans:
+    - 79896-7:goldmans:
         name: "Goldman's Applanation Tonometry"
         writer:
             name: tonometry
-            props:
+            data:
                 method: "goldman's"
+                icon: observation
     # Refraction
     - 79898-3:
         reader:
             name: refraction
-    # Refraction with dilatation
-    - 79898-3:dialated:
-        name: "Refraction: Dilated"
-        writer:
-            name: refraction
-            props:
-                type: dilated
     - <118235002:
         writer:
-            name: concept-eye
-    # Refraction without dilatation
-    - 79898-3:undilated:
-        name: "Refraction: Undilated"
+            name: eye-condition
+            data:
+                icon: condition
+    # Refraction with dilatation
+    - 79898-3:objective-dialated:
+        name: "Objective Refraction: Dilated"
         writer:
             name: refraction
-            props:
-                type: undilated
+            data:
+                type: objective
+                dilatation: dilated
+                icon: observation
+    # Refraction without dilatation
+    - 79898-3:objective-undilated:
+        name: "Objective Refraction: Undilated"
+        writer:
+            name: refraction
+            data:
+                type: objective
+                dilatation: undilated
+                icon: observation
+    - 79898-3:subjective-dialated:
+        name: "Subjective Refraction: Dilated"
+        writer:
+            name: refraction
+            data:
+                type: subjective
+                dilatation: dilated
+                icon: observation
+    # Refraction without dilatation
+    - 79898-3:subjective-undilated:
+        name: "Subjective Refraction: Undilated"
+        writer:
+            name: refraction
+            data:
+                type: subjective
+                dilatation: undilated
+                icon: observation
     # Central Corneal Thickness
     - 79897-5:
         reader:

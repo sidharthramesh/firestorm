@@ -53,6 +53,25 @@ type concept struct {
 	Codesystem    string                 `json:"codesystem"`
 }
 
+type weightedTerm struct {
+	Input string `json:"input,omitempty"`
+	Weight int `json:"weight,omitempty"`
+}
+
+type weightedconcept struct {
+	ID            string                 `json:"id"`
+	Name          string                 `json:"name"`
+	IsA           []string               `json:"is_a,omitempty"`
+	Readable      bool                   `json:"readable"`
+	Writable      bool                   `json:"writable"`
+	Reader        map[string]interface{} `json:"reader,omitempty"`
+	Writer        map[string]interface{} `json:"writer,omitempty"`
+	Terms         []weightedTerm               `json:"terms,omitempty"`
+	Relationships *[]relationship        `json:"relationships,omitempty"`
+	Department    []string               `json:"department,omitempty"`
+	Codesystem    string                 `json:"codesystem"`
+}
+
 type elasticSearchAction struct {
 	Action  string  `json:"action"`
 	Concept concept `json:"concept"`
@@ -248,6 +267,7 @@ func buildLoinc(path string) {
 				unitsRel.Destination.Name = units
 				relationships := []relationship{*unitsRel}
 				loincConcept.Relationships = &relationships
+				loincConcept.IsA = []string{"loinc"}
 			}
 			data[id] = loincConcept
 		}
@@ -514,54 +534,81 @@ func doMigrate(url string, index string, migrationFolder string, reset bool) err
 		for r.Scan() {
 			var action elasticSearchAction
 			json.Unmarshal(r.Bytes(), &action)
-			b, _ := json.Marshal(action.Concept)
-			switch action.Action {
-			case "index", "update":
-				err = bi.Add(
-					context.Background(),
-					esutil.BulkIndexerItem{
-						Index: index,
-						// Action field configures the operation to perform (index, create, delete, update)
-						Action:     "index",
-						DocumentID: action.Concept.ID,
-						Body:       bytes.NewReader(b),
-						OnSuccess: func(ctx context.Context, item esutil.BulkIndexerItem, res esutil.BulkIndexerResponseItem) {
-							bar.Increment()
+			
+			
+			if action.Concept.Readable || action.Concept.Writable {
+				//  Adding weighted concept terms
+				var wTerms []weightedTerm
+				concept := action.Concept
+				for _, term := range concept.Terms {
+					wTerms = append(wTerms, weightedTerm{term, 10})
+					for _, subterm := range strings.Split(term, " "){
+						wTerms = append(wTerms, weightedTerm{subterm, 9})
+					}
+				}
+				
+				var wConcept weightedconcept
+				wConcept.ID = concept.ID
+				wConcept.Name = concept.Name
+				wConcept.IsA = concept.IsA
+				wConcept.Readable = concept.Readable
+				wConcept.Writable = concept.Writable
+				wConcept.Reader = concept.Reader
+				wConcept.Writer = concept.Writer
+				wConcept.Terms = wTerms
+				wConcept.Relationships = concept.Relationships
+				wConcept.Department = concept.Department
+				wConcept.Codesystem = concept.Codesystem
+	
+				b, _ := json.Marshal(wConcept)
+				switch action.Action {
+				case "index", "update":
+					err = bi.Add(
+						context.Background(),
+						esutil.BulkIndexerItem{
+							Index: index,
+							// Action field configures the operation to perform (index, create, delete, update)
+							Action:     "index",
+							DocumentID: action.Concept.ID,
+							Body:       bytes.NewReader(b),
+							OnSuccess: func(ctx context.Context, item esutil.BulkIndexerItem, res esutil.BulkIndexerResponseItem) {
+								bar.Increment()
+							},
+							OnFailure: func(ctx context.Context, item esutil.BulkIndexerItem, res esutil.BulkIndexerResponseItem, err error) {
+								log.Printf("%v", err)
+								if err != nil {
+									log.Printf("ERROR: %s", err)
+								} else {
+									log.Printf("ERROR: %s: %s", res.Error.Type, res.Error.Reason)
+								}
+							},
 						},
-						OnFailure: func(ctx context.Context, item esutil.BulkIndexerItem, res esutil.BulkIndexerResponseItem, err error) {
-							log.Printf("%v", err)
-							if err != nil {
-								log.Printf("ERROR: %s", err)
-							} else {
-								log.Printf("ERROR: %s: %s", res.Error.Type, res.Error.Reason)
-							}
+					)
+				case "delete":
+					err = bi.Add(
+						context.Background(),
+						esutil.BulkIndexerItem{
+							Index: index,
+							// Action field configures the operation to perform (index, create, delete, update)
+							Action:     "delete",
+							DocumentID: action.Concept.ID,
+							OnSuccess: func(ctx context.Context, item esutil.BulkIndexerItem, res esutil.BulkIndexerResponseItem) {
+								bar.Increment()
+							},
+							OnFailure: func(ctx context.Context, item esutil.BulkIndexerItem, res esutil.BulkIndexerResponseItem, err error) {
+								log.Printf("%v", err)
+								if err != nil {
+									log.Printf("ERROR: %s", err)
+								} else {
+									log.Printf("ERROR: %s: %s", res.Error.Type, res.Error.Reason)
+								}
+							},
 						},
-					},
-				)
-			case "delete":
-				err = bi.Add(
-					context.Background(),
-					esutil.BulkIndexerItem{
-						Index: index,
-						// Action field configures the operation to perform (index, create, delete, update)
-						Action:     "delete",
-						DocumentID: action.Concept.ID,
-						OnSuccess: func(ctx context.Context, item esutil.BulkIndexerItem, res esutil.BulkIndexerResponseItem) {
-							bar.Increment()
-						},
-						OnFailure: func(ctx context.Context, item esutil.BulkIndexerItem, res esutil.BulkIndexerResponseItem, err error) {
-							log.Printf("%v", err)
-							if err != nil {
-								log.Printf("ERROR: %s", err)
-							} else {
-								log.Printf("ERROR: %s: %s", res.Error.Type, res.Error.Reason)
-							}
-						},
-					},
-				)
-			}
-			if err != nil {
-				log.Fatalf("Unexpected error: %s", err)
+					)
+				}
+				if err != nil {
+					log.Fatalf("Unexpected error: %s", err)
+				}
 			}
 		}
 		err = bi.Close(context.Background())

@@ -16,6 +16,9 @@ concepts:
     - 79898-3:
         reader:
             name: refraction
+    - 79895-9:
+        reader:
+            name: refraction
     - <118235002:
         writer:
             name: eye-condition
@@ -39,7 +42,7 @@ concepts:
                 type: objective
                 dilatation: undilated
                 icon: observation
-    - 79898-3:subjective-dialated:
+    - 79895-9:subjective-dialated:
         name: "Subjective Refraction: Dilated"
         writer:
             name: refraction
@@ -48,7 +51,7 @@ concepts:
                 dilatation: dilated
                 icon: observation
     # Refraction without dilatation
-    - 79898-3:subjective-undilated:
+    - 79895-9:subjective-undilated:
         name: "Subjective Refraction: Undilated"
         writer:
             name: refraction

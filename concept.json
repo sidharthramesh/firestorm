@@ -1,0 +1,25 @@
+{
+    "mappings": {
+        "properties": {
+            "terms": {
+                "type": "completion",
+                "contexts": [
+                    {
+                        "name": "is_a",
+                        "type": "category",
+                        "path": "is_a"
+                    }
+                ]
+            },
+            "name": {
+                "type": "text"
+            },
+            "relationships": {
+                "type": "object"
+            },
+            "is_a": {
+                "type": "keyword"
+            }
+        }
+    }
+}

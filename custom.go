@@ -8,12 +8,14 @@ import (
 	"github.com/Navops/yaml"
 )
 
+//A CustomConcept represents a derived concept
 type CustomConcept struct {
 	Name   string
 	Reader map[string]interface{}
 	Writer map[string]interface{}
 }
 
+// A Config represents the config
 type Config struct {
 	Department string
 	Concepts   [] map[string] CustomConcept
@@ -58,14 +60,13 @@ func buildCustom(path string) {
 					log.Printf("Parent concept and derived concept %v name cannot be the same. Skipping", key)
 					break
 				}
-				derivedConcept := concept{
-					ID:            key,
-					Name:          customConcept.Name,
-					IsA:           parentConcept.IsA,
-					Terms:         append(parentConcept.Terms, customConcept.Name),
-					Relationships: parentConcept.Relationships,
-					Codesystem:    parentConcept.Codesystem,
-				}
+				derivedConcept := concept{}
+				derivedConcept.ID = key
+				derivedConcept.Name = customConcept.Name
+				derivedConcept.IsA = parentConcept.IsA
+				derivedConcept.Terms = append(parentConcept.Terms, customConcept.Name)
+				derivedConcept.Relationships = parentConcept.Relationships
+				derivedConcept.Codesystem = parentConcept.Codesystem
 				log.Printf("Adding new concept: %v", key)
 				data[key] = derivedConcept
 				toBuild = append(toBuild, key)

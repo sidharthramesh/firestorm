@@ -2,7 +2,7 @@ SnomedCT_*
 Loinc_*
 backup/*
 .vscode
-migrations/*
+migrations/
+assets/
 *.exe
-migrate.lock
-firestorm
+*.lock

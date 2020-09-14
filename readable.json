@@ -1,0 +1,21 @@
+{
+    "mappings": {
+        "properties": {
+            "terms" :{
+                "type": "text"
+            },
+            "name": {
+                "type": "text"
+            },
+            "relationships": {
+                "type": "object"
+            },
+            "is_a": {
+                "type": "keyword"
+            },
+            "reader": {
+                "type": "object"
+            }
+        }
+    }
+}

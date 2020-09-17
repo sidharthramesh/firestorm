@@ -197,6 +197,7 @@ func applyActions(url string, actions []esAction, reset bool) error {
 	stats := bi.Stats()
 	log.Printf("Stats: %+v", stats)
 	log.Printf("Finished: %v. Errors: %v", stats.NumFlushed, stats.NumFailed)
+	log.Printf("Supposed to fail: %v (%v)", 2, "SNOMED CT Concept and Cefsac")
 	return nil
 }
 

@@ -19,11 +19,6 @@ concepts:
     - 79895-9:
         reader:
             name: refraction
-    - <118235002:
-        writer:
-            name: eye-condition
-            data:
-                icon: condition
     # Refraction with dilatation
     - 79898-3:objective-dialated:
         name: "Objective Refraction: Dilated"
@@ -74,5 +69,3 @@ concepts:
                         }
         writer:
             name: central-cornael-thickness
-        
-    # Medication Panel
